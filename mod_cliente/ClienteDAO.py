@@ -1,30 +1,29 @@
 import db
-from mod_cliente.ClienteModel import ClienteDB
+from mod_produto.ProdutoModel import ProdutoDB
+from fastapi import Depends
+import security
 
 from fastapi import APIRouter
 from pydantic import BaseModel
 
-router = APIRouter()
+router = APIRouter( dependencies=[Depends(security.verify_token), Depends(security.verify_key)] )
 
-
-class Cliente(BaseModel):
+class Produto(BaseModel):
     codigo: int = None
     nome: str
-    cpf: str
-    telefone: str = None
-    compra_fiado: int
-    dia_fiado: int = None
-    senha: str = None
+    descricao: str
+    foto: bool = None
+    valor_unitario: float
 
-# Criar os endpoints de cliente: GET, POST, PUT, DELETE
+# Criar os endpoints de produto: GET, POST, PUT, DELETE
 
 
-@router.get("/cliente/", tags=["cliente"])
-def get_cliente():
+@router.get("/produto/", tags=["produto"])
+def get_produto():
     try:
         session = db.Session()
         # busca todos
-        dados = session.query(ClienteDB).all()
+        dados = session.query(ProdutoDB).all()
         return dados, 200
     except Exception as e:
         return {"msg": "Erro ao listar", "erro": str(e)}, 404
@@ -32,13 +31,13 @@ def get_cliente():
         session.close()
 
 
-@router.get("/cliente/{id}", tags=["cliente"])
-def get_cliente(id: int):
+@router.get("/produto/{id}", tags=["produto"])
+def get_produto(id: int):
     try:
         session = db.Session()
         # busca um com filtro
-        dados = session.query(ClienteDB).filter(
-            ClienteDB.id_cliente == id).all()
+        dados = session.query(ProdutoDB).filter(
+            ProdutoDB.id_produto == id).all()
         return dados, 200
 
     except Exception as e:
@@ -47,24 +46,21 @@ def get_cliente(id: int):
         session.close()
 
 
-@router.post("/cliente/", tags=["cliente"])
-def post_cliente(corpo: Cliente):
+@router.post("/produto/", tags=["produto"])
+def post_produto(corpo: Produto):
     try:
         session = db.Session()
 
-        dados = ClienteDB()
+        dados = ProdutoDB()
         
-        dados.id_cliente = None
         dados.nome = corpo.nome
-        dados.cpf = corpo.cpf
-        dados.telefone = corpo.telefone
-        dados.compra_fiado = corpo.compra_fiado
-        dados.dia_fiado = corpo.dia_fiado
-        dados.senha = corpo.senha
+        dados.descricao = corpo.descricao
+        dados.foto = corpo.foto
+        dados.valor_unitario = corpo.valor_unitario
         
         session.add(dados)
         session.commit()
-        return {"msg": "Cadastrado com sucesso!", "id": dados.id_cliente}, 200
+        return {"msg": "Cadastrado com sucesso!", "id": dados.id_produto}, 200
 
     except Exception as e:
         session.rollback()
@@ -73,22 +69,19 @@ def post_cliente(corpo: Cliente):
         session.close()
 
 
-@router.put("/cliente/{id}", tags=["cliente"])
-def put_cliente(id: int, corpo: Cliente):
+@router.put("/produto/{id}", tags=["produto"])
+def put_produto(id: int, corpo: Produto):
     try:
         session = db.Session()
-        dados = session.query(ClienteDB).filter(ClienteDB.id_cliente == id).one()
-        
+        dados = session.query(ProdutoDB).filter(
+            ProdutoDB.id_produto == id).one()
         dados.nome = corpo.nome
-        dados.cpf = corpo.cpf
-        dados.telefone = corpo.telefone
-        dados.senha = corpo.senha
-        dados.compra_fiado = corpo.compra_fiado
-        dados.dia_fiado = corpo.dia_fiado
-        
+        dados.descricao = corpo.descricao
+        dados.foto = corpo.foto
+        dados.valor_unitario = corpo.valor_unitario
         session.add(dados)
         session.commit()
-        return {"msg": "Editado com sucesso!", "id": dados.id_cliente}, 201
+        return {"msg": "Editado com sucesso!", "id": dados.id_produto}, 201
     except Exception as e:
         session.rollback()
         return {"msg": "Erro ao editar", "erro": str(e)}, 406
@@ -96,15 +89,15 @@ def put_cliente(id: int, corpo: Cliente):
         session.close()
 
 
-@router.delete("/cliente/{id}", tags=["cliente"])
-def delete_cliente(id: int):
+@router.delete("/produto/{id}", tags=["produto"])
+def delete_produto(id: int):
     try:
         session = db.Session()
-        dados = session.query(ClienteDB).filter(
-            ClienteDB.id_cliente == id).one()
+        dados = session.query(ProdutoDB).filter(
+            ProdutoDB.id_produto == id).one()
         session.delete(dados)
         session.commit()
-        return {"msg": "Excluido com sucesso!", "id": dados.id_cliente}, 201
+        return {"msg": "Excluido com sucesso!", "id": dados.id_produto}, 201
     except Exception as e:
         session.rollback()
         return {"msg": "Erro ao excluir", "erro": str(e)}, 406
