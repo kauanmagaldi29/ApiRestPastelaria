@@ -1,7 +1,7 @@
 ### Verbo GET – listar
 GET http://localhost:8000/produto HTTP/1.1
 x-token: abcBolinhasToken
-x-key: abcBolinhasKey
+x-key: abcBolinhasKeyiu
 
 ### Verbo GET – listar todos
 curl -X 'GET' \
