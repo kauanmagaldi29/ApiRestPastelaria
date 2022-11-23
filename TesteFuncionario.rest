@@ -1,0 +1,33 @@
+### Verbo GET – listar
+GET http://localhost:5000/funcionario/ HTTP/1.1
+content-type: application/json
+
+### Verbo POST – adicionar
+POST http://127.0.0.1:5000/funcionario/ HTTP/1.1
+content-type: application/json
+
+{
+    "nome" : "Kauan",
+    "cpf" : "12345689",
+    "telefone" : "99155555",
+    "senha" : "kauan",
+    "matricula" : "141415",
+    "grupo" : 1
+}
+
+### Verbo PUT – atualiza
+PUT http://127.0.0.1:5000/funcionario/1 HTTP/1.1
+content-type: application/json
+
+{
+    "nome" : "Kauan Magaldi",
+    "cpf" : "01229324984",
+    "telefone" : "991556660",
+    "senha" : "1",
+    "matricula" : "148061",
+    "grupo" : 2
+}
+
+### Verbo DELETE - excluir
+DELETE http://127.0.0.1:5000/funcionario/1 HTTP/1.1
+content-type: application/json
